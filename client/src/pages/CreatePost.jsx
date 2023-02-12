@@ -26,7 +26,30 @@ export function CreatePost() {
     setForm({ ...form, prompt: randomPrompt })
   }
 
-  const generateImage = async () => {}
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true)
+        const res = await fetch('http://localhost:5500/api/solle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+        })
+
+        const data = await res.json()
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` })
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setGeneratingImg(false)
+      }
+    } else {
+      alert('Please enter a prompt')
+    }
+  }
+
   return (
     <section className='max-w-7xl mx-auto'>
       <div>
