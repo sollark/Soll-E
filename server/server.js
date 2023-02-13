@@ -2,6 +2,7 @@ import express from 'express'
 import * as dotenv from 'dotenv'
 import cors from 'cors'
 import path from 'path'
+import { fileURLToPath } from 'url'
 
 import { connectDB } from './mongodb/connect.js'
 import { postRoutes } from './routes/postRoutes.js'
@@ -18,7 +19,7 @@ app.use('/api/post', postRoutes)
 app.use('/api/solle', solleRoutes)
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.resolve(__dirname, 'public')))
+  app.use(express.static(path.resolve(getDirname(import.meta.url), 'public')))
 } else {
   const corsOptions = {
     origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
@@ -28,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.get('/**', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'))
+  res.sendFile(path.join(getDirname(import.meta.url), 'public', 'index.html'))
 })
 
 const startServer = async () => {
@@ -44,3 +45,15 @@ const startServer = async () => {
 }
 
 startServer()
+
+function getFilename(metaUrl) {
+  const __filename = fileURLToPath(metaUrl)
+
+  return __filename
+}
+
+function getDirname(metaUrl) {
+  const __dirname = path.dirname(getFilename(metaUrl))
+
+  return __dirname
+}
