@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, FormField, Loader } from '../cmps'
+const BASE_URL =
+  process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost:3030/api/'
 
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0) {
@@ -25,7 +27,8 @@ export function Home() {
       setLoading(true)
 
       try {
-        const res = await fetch('http://localhost:5500/api/post', {
+        const res = await fetch(BASE_URL + 'post', {
+          // const res = await fetch('http://localhost:5500/api/post', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

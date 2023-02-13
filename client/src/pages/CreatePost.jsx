@@ -4,6 +4,9 @@ import { preview } from '../assets'
 import { getRandomPrompt } from '../utils'
 import { FormField, Loader } from '../cmps'
 
+const BASE_URL =
+  process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost:3030/api/'
+
 export function CreatePost() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
@@ -21,7 +24,7 @@ export function CreatePost() {
     if (form.name && form.prompt && form.photo) {
       setLoading(true)
       try {
-        const res = await fetch('http://localhost:5500/api/post', {
+        const res = await fetch(BASE_URL + 'post', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -54,7 +57,7 @@ export function CreatePost() {
     if (form.prompt) {
       try {
         setGeneratingImg(true)
-        const res = await fetch('http://localhost:5500/api/solle', {
+        const res = await fetch(BASE_URL + 'solle', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
