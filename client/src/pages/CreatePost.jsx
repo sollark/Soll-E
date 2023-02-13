@@ -15,7 +15,31 @@ export function CreatePost() {
   const [generatingImg, setGeneratingImg] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {}
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (form.name && form.prompt && form.photo) {
+      setLoading(true)
+      try {
+        const res = await fetch('http://localhost:5500/api/post', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(form),
+        })
+
+        await res.json()
+        navigate(`/`)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
+    } else {
+      alert('Please fill all the fields')
+    }
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })

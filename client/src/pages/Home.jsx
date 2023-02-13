@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Card, FormField, Loader } from '../cmps'
+
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0) {
     return data.map((post) => <Card key={post._id} {...post} />)
@@ -10,10 +11,61 @@ const RenderCards = ({ data, title }) => {
 }
 
 export function Home() {
-  console.log('Home connected')
   const [Loading, setLoading] = useState(false)
   const [posts, setPosts] = useState([])
+  // input search
   const [searchText, setSearchText] = useState('')
+  // search result
+  const [searchResult, setSearchResult] = useState(null)
+  const [searchTimeOut, setSearchTimeOut] = useState(null)
+
+  // load posts
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true)
+
+      try {
+        const res = await fetch('http://localhost:5500/api/post', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (res.ok) {
+          const result = await res.json()
+          setPosts(result.data.reverse())
+        }
+      } catch (err) {
+        console.log(err)
+        console.log(res.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPosts()
+  }, [])
+
+  const handleSearch = async (e) => {
+    const inputText = e.target.value
+    setSearchText(inputText)
+
+    // debounce search
+    clearTimeout(searchTimeOut)
+    setSearchTimeOut(
+      setTimeout(() => {
+        const searchResults = posts.filter((post) => {
+          return (
+            post.name.toLowerCase().includes(inputText.toLowerCase()) ||
+            post.prompt.toLowerCase().includes(inputText.toLowerCase())
+          )
+        })
+
+        setSearchResult(searchResults)
+      }, 500)
+    )
+  }
 
   return (
     <section className='max-w-7xl mx-auto'>
@@ -27,7 +79,14 @@ export function Home() {
         </p>
       </div>
       <div className='mt-16'>
-        <FormField />
+        <FormField
+          labelName='Search posts'
+          type='text'
+          name='text'
+          placeholder='Search posts'
+          value={searchText}
+          handleChange={handleSearch}
+        />
       </div>
       <div className='mt-10'>
         {Loading ? (
@@ -44,7 +103,7 @@ export function Home() {
             )}
             <div className='grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3'>
               {searchText ? (
-                <RenderCards data={posts} title='No search results' />
+                <RenderCards data={searchResult} title='No search results' />
               ) : (
                 <RenderCards data={posts} title='No post found' />
               )}
