@@ -29,6 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.get('/**', (req, res) => {
+  console.log('import.meta.url:', import.meta.url)
   res.sendFile(path.join(getDirname(import.meta.url), 'public', 'index.html'))
 })
 
