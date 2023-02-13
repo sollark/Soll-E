@@ -1,6 +1,7 @@
 import express from 'express'
 import * as dotenv from 'dotenv'
 import cors from 'cors'
+import path from 'path'
 
 import { connectDB } from './mongodb/connect.js'
 import { postRoutes } from './routes/postRoutes.js'
