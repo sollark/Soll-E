@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { preview } from '../assets'
 import { getRandomPrompt } from '../utils'
@@ -16,13 +16,13 @@ export function CreatePost() {
   })
 
   const [generatingImg, setGeneratingImg] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [posting, setPosting] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (form.name && form.prompt && form.photo) {
-      setLoading(true)
+      setPosting(true)
       try {
         const res = await fetch(BASE_URL + 'post', {
           method: 'POST',
@@ -37,7 +37,7 @@ export function CreatePost() {
       } catch (err) {
         console.log(err)
       } finally {
-        setLoading(false)
+        setPosting(false)
       }
     } else {
       alert('Please fill all the fields')
@@ -53,27 +53,64 @@ export function CreatePost() {
     setForm({ ...form, prompt: randomPrompt })
   }
 
+  // Generate image
+  const controllerRef = useRef(null)
+  const timeoutRef = useRef(null)
+
   const generateImage = async () => {
     if (form.prompt) {
+      // Abort previous request
+      if (generatingImg) {
+        handleAbort()
+        return
+      }
+
+      setGeneratingImg(true)
+
       try {
-        setGeneratingImg(true)
+        // Controller for aborting the request
+        const controller = new AbortController()
+        controllerRef.current = controller
+
+        // Timeout for the request
+        timeoutRef.current = setTimeout(() => {
+          handleAbort()
+        }, 60000)
+
         const res = await fetch(BASE_URL + 'solle', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ prompt: form.prompt }),
+          signal: controller.signal,
         })
-
         const data = await res.json()
         setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` })
       } catch (err) {
         console.log(err)
       } finally {
-        setGeneratingImg(false)
+        handleAbort()
       }
     } else {
       alert('Please enter a prompt')
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      // Abort request on unmount
+      handleAbort()
+    }
+  }, [])
+
+  // Abort image generation request
+  const handleAbort = () => {
+    if (controllerRef.current) {
+      controllerRef.current.abort()
+      controllerRef.current = null
+      setGeneratingImg(false)
+      clearTimeout(timeoutRef.current)
     }
   }
 
@@ -143,12 +180,12 @@ export function CreatePost() {
         </div>
         <div className='mt-10'>
           <p className='mt-2 text-[#666e775] text-[14px]'>
-            Share the image with others
+            Post the image with others
           </p>
           <button
             type='submit'
             className='mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center'>
-            {loading ? 'Sharing...' : 'Share'}
+            {posting ? 'Posting...' : 'Post'}
           </button>
         </div>
       </form>
