@@ -9,28 +9,29 @@ import { postRoutes } from './routes/postRoutes.js'
 import { solleRoutes } from './routes/solleRoutes.js'
 
 const PORT = process.env.PORT || 3030
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 dotenv.config()
 
 const app = express()
 
-app.use(express.json({ limit: '50mb' }))
-app.use('/api/post', postRoutes)
-app.use('/api/solle', solleRoutes)
-
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.resolve(getDirname(import.meta.url), 'public')))
+  app.use(express.static(path.resolve(__dirname, 'public')))
 } else {
   const corsOptions = {
     origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
+    // origin: true,
     credentials: true,
   }
   app.use(cors(corsOptions))
 }
 
+app.use(express.json({ limit: '50mb' }))
+app.use('/api/post', postRoutes)
+app.use('/api/solle', solleRoutes)
+
 app.get('/**', (req, res) => {
-  console.log('import.meta.url:', import.meta.url)
-  res.sendFile(path.join(getDirname(import.meta.url), 'public', 'index.html'))
+  res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
 
 const startServer = async () => {
@@ -47,14 +48,14 @@ const startServer = async () => {
 
 startServer()
 
-function getFilename(metaUrl) {
-  const __filename = fileURLToPath(metaUrl)
+// function getFilename(metaUrl) {
+//   const __filename = fileURLToPath(metaUrl)
 
-  return __filename
-}
+//   return __filename
+// }
 
-function getDirname(metaUrl) {
-  const __dirname = path.dirname(getFilename(metaUrl))
+// function getDirname(metaUrl) {
+//   const __dirname = path.dirname(getFilename(metaUrl))
 
-  return __dirname
-}
+//   return __dirname
+// }

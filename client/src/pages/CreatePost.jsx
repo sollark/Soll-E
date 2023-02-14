@@ -80,10 +80,15 @@ export function CreatePost() {
   return (
     <section className='max-w-7xl mx-auto'>
       <div>
-        <h1 className='font-extrabold text-[#222328] text-[32px]'>Create</h1>
-        <p className='mt-2 text-[#666e75] text-[16px] max-w-[500px]'>
-          Create imaginative and visually stunning images through DALL-E AI and
-          share them with the world.
+        <h1 className='font-extrabold text-[#222328] text-[32px]'>
+          Create new post
+        </h1>
+        <p className='mt-2 text-[#666e75] text-[16px] max-w-3xl text-justify'>
+          Soll-E harnesses the power of AI to help you generate stunning visuals
+          with just a few clicks. By simply entering your prompt, you can create
+          incredible, high-quality images using the OpenAI API. Share your
+          visually stunning creations with the world, and bring your ideas to
+          life like never before with Soll-E.
         </p>
       </div>
 
