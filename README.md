@@ -11,10 +11,6 @@ To generate an image, enter a prompt that describes the image you want to create
 
 ![Example](client/src/assets/example.webp)
 
-### Dependencies
-
-Soll-E depends on the OpenAI API. No other dependencies are required.
-
 ## Technologies
 
 - React
