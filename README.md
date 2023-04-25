@@ -11,7 +11,7 @@
 
 ## Website
 
-Visit ![Soll-E](https://soll-e.onrender.com)
+Visit [Soll-E](https://soll-e.onrender.com)
 
 ![screenshot](client/src/assets/example.webp)
 
